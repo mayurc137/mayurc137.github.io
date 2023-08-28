@@ -17,7 +17,7 @@
 
     <meta name="description" content="Mayur Morè builds Conversational Interfaces at BotSpace" />
     <meta name="p:domain_verify" content="f63c25afab88d45dc93dc3cbafe05726"/>
-    <meta property="og:title" content="Mayur More. Product Designer. Bangalore/Remote" />
+    <meta property="og:title" content="Mayur More. Product Designer. Pune/Remote" />
     <meta property='og:locale' content="en_GB" />
     <meta property='og:description' content="Mayur More builds conversation interfaces at BotSpace" />
     <meta property="og:type" content="website" />
@@ -26,7 +26,7 @@
     <meta property="og:image" content="https://mayurc137.github.io/og_image.jpg" />
     
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Mayur Morè. Product Designer. Bangalore/Remote">
+    <meta name="twitter:title" content="Mayur Morè. Product Designer. Pune/Remote">
     <meta name="twitter:description" content="Mayur Morè builds Conversation Interfaces at BotSpace">
     <meta name="twitter:image" content="https://mayurc137.github.io/og_image.jpg">
     
@@ -440,6 +440,37 @@
             -webkit-transition: all 0.3s;
             -moz-transition: all 0.3s;
         }
+
+        #bg-grid:where(.astro-2BMGK6AI) {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            z-index: -2;
+            pointer-events: none;
+            filter: blur(10px);
+            grid-template-columns: repeat(5, 1fr)
+        }
+
+        #bg-grid:where(.astro-2BMGK6AI) div:where(.astro-2BMGK6AI) {
+            background: #f8f9fa;
+            transition: .8s background linear
+        }
+
+        #bg-grid:where(.astro-2BMGK6AI) div:where(.astro-2BMGK6AI).hovered {
+            background: #e9ecef
+        }
+
+        #bg-grid:where(.astro-2BMGK6AI) div:where(.astro-2BMGK6AI).hovered-fast-trans {
+            transition: .1s background linear
+        }
+
+        #bg-grid:where(.astro-2BMGK6AI) div:where(.astro-2BMGK6AI).clicked {
+            background: var(--click-bg);
+            transition: 10ms background linear
+        }
     </style>
 
 </head>
@@ -573,7 +604,7 @@
     </div>
     <div class="footer">
         <div class="foot-copy">
-            <h3>© MAYURMORE 2020</h3>
+            <h3>© MAYUR MORE 2023</h3>
         </div>
         <div class="foot-links">
             <a href="" target="_blank">
@@ -582,6 +613,10 @@
         </div>
     </div>
 
+</div>
+
+<div id="bg-grid" aria-hidden="true" class="astro-2BMGK6AI">
+	<div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div><div class="astro-2BMGK6AI"></div>
 </div>
 
 </body>
@@ -675,6 +710,54 @@
     
 
     
+</script>
+<script lang="javascript">
+	const grid = document.getElementById('bg-grid')
+	const [ rows, columns ] = [ 5, 5 ]
+
+	let lastHovered = -1
+	let mouseDown = false
+	let lastHue = 0
+	const prevDown = {}
+    window.rainbowMode = false
+
+	const render = (event) => {
+
+		const [ x, y ] = [ event.clientX, event.clientY ]
+		const row = Math.floor(y * rows / window.innerHeight)
+		const column = Math.floor(x * columns / window.innerWidth)
+
+		const cellIndex = row < rows || column > columns
+			? row * rows + column
+			: -1
+		const hovered = grid.children[cellIndex]
+
+		if (cellIndex >= 0) {
+			if (!prevDown[cellIndex] && (mouseDown || window.rainbowMode)) {
+				const hue = (lastHue + 12 + Math.floor(Math.random() * 16)) % 360
+				hovered.style.setProperty('--click-bg', `hsl(${hue}deg, 100%, 50%, 0.5)`)
+				lastHue = hue
+			}
+
+			hovered.classList.add('hovered')
+			hovered.classList.toggle('clicked', (mouseDown || window.rainbowMode))
+			hovered.classList.toggle('hovered-fast-trans', !prevDown[cellIndex] && !(mouseDown || window.rainbowMode))
+		}
+		
+		if (lastHovered >= 0 && lastHovered !== cellIndex) {
+			grid.children[lastHovered].classList.remove('hovered', 'hovered-fast-trans', 'clicked')
+			prevDown[lastHovered] = false
+		}
+		
+		lastHovered = cellIndex
+		prevDown[cellIndex] = mouseDown || window.rainbowMode
+	}
+
+	document.addEventListener('mousemove', render, { capture: true, passive: true })
+	document.addEventListener('mouseleave', () => render({ clientX: -1, clientY: -1 }), { passive: true })
+	document.addEventListener('mousedown', (event) => { mouseDown = true; render(event) }, { capture: true, passive: true })
+	document.addEventListener('mouseup', (event) => { mouseDown = false; render(event) }, { capture: true, passive: true })
+	document.addEventListener('dragend', (event) => { mouseDown = false; render(event) }, { capture: true, passive: true })
 </script>
 
 </html>
